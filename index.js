@@ -19,6 +19,7 @@ async function run() {
     try {
         await client.connect();
         const packageCollection = client.db("mindTrip").collection("packages");
+        const favouriteCollection = client.db("mindTrip").collection("favourites");
 
         app.post('/package', async (req, res) => {
             const data = req.body;
@@ -29,6 +30,17 @@ async function run() {
 
         app.get('/package', async (req, res) => {
             const result = await packageCollection.find().toArray();
+            res.send(result)
+        });
+
+        app.put('/favourite', async (req, res) => {
+            const data = req.body;
+            const filter = { name: data.name };
+            const updateDoc = {
+                $set: data
+            };
+            const options = { upsert: true };
+            const result = await favouriteCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
     }
